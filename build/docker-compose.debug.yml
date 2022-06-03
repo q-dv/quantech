@@ -1,14 +1,35 @@
-version: "3.4"
+version: "3.9"
 
 services:
-  quantech:
-    image: quantech
+  web:
+    container_name: web
     build:
       context: ../
       dockerfile: ./build/web/Dockerfile.dev
-    environment:
-      NODE_ENV: development
     ports:
       - 3000:3000
-      - 9229:9229
-    command: ["node", "--inspect=0.0.0.0:9229", "index.js"]
+    restart: on-failure
+  svc1:
+    build:
+      context: ../
+      dockerfile: ./build/svc1/Dockerfile
+    image: service/one
+    container_name: svc1
+    ports:
+      - 5001:5001
+    restart: on-failure
+
+  # Proxies requests to internal services
+  reverse-proxy:
+    container_name: reverse_proxy
+    # image: nginx:1.17.10
+    # volumes:
+    #   - ../nginx/default.conf:/etc/nginx/nginx.conf
+    build:
+      context: ../
+      dockerfile: ./build/nginx/Dockerfile.dev
+    ports:
+      - 80:80
+    depends_on:
+      - web
+      - svc1

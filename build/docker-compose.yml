@@ -1,8 +1,8 @@
 version: "3.4"
 
 services:
-  quantech:
-    image: quantech
+  web:
+    image: web
     build:
       context: web
       dockerfile: ./Dockerfile
